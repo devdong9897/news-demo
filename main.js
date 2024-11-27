@@ -10,10 +10,21 @@ let url = new URL(
 );
 
 const getNews = async () => {
-  const response = await fetch(url);
-  const data = await response.json();
-  newsList = data.articles;
-  render();
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (response.status === 200) {
+      if (data.articles.length === 0) {
+        throw new Error("NO result for this search");
+      }
+      newsList = data.articles;
+      render();
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    errorRender(error.message);
+  }
 };
 
 const getLatestNews = async () => {
@@ -42,7 +53,7 @@ const getNewsByKeyword = async () => {
 const render = () => {
   const newsHTML = newsList
     .map(
-      (news) => ` <div class="row news">
+      (news) => `<div class="row news">
           <div class="col-lg-4">
             <img
               class="news-img-size"
@@ -60,6 +71,15 @@ const render = () => {
 
   document.getElementById("news-board").innerHTML = newsHTML;
 };
+
+const errorRender = (errorMessage) => {
+  const errorHTML = ` <div class="alert alert-danger" rol="alert">
+    ${errorMessage}
+  </div>`;
+
+  document.getElementById("news-board").innerHTML = errorHTML;
+};
+
 getLatestNews();
 
 // 1. 버튼들에 클릭이벤트주기
