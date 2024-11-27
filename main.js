@@ -30,6 +30,17 @@ const getNewsByCategory = async (event) => {
   render();
 };
 
+const getNewsByKeyword = async () => {
+  const keyword = document.getElementById("search-input").value;
+  const url = new URL(
+    `https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${API_KEY}`
+  );
+  const response = await fetch(url);
+  const data = await response.json();
+  newsList = data.articles;
+  render();
+};
+
 const render = () => {
   const newsHTML = newsList
     .map(
